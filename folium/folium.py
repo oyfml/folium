@@ -5,7 +5,6 @@ Make beautiful, interactive maps with Python and Leaflet.js
 
 import time
 import warnings
-import inspect
 
 from branca.element import Element, Figure, MacroElement
 
