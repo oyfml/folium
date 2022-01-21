@@ -70,7 +70,7 @@ class MapMeta(type):
   def __new__(self, class_name, bases, attrs):
     cls_init = attrs["__init__"]
     def new_init(self, *args, **kwargs):
-       # convert args to kwargs
+        # convert args to kwargs
         arg_names = cls_init.__code__.co_varnames[1:]
         if len(args) > len(arg_names):
             raise TypeError(
@@ -78,6 +78,7 @@ class MapMeta(type):
             )
         for name, arg in zip(arg_names, args):
             kwargs[name] = arg
+
         # validate out-of-bounds location
         if "location" in kwargs.keys():
             validate_location(kwargs["location"])
@@ -94,11 +95,14 @@ class MapMeta(type):
                 )
         else:
             kwargs["location"] = [1.2903, 103.8520]
+
         # overwrite default kwargs here
         kwargs["tiles"] = "https://mywebsite.com/tileserver/styles/grey/{z}/{x}/{y}.png"
         kwargs["min_zoom"] = 11
         kwargs["max_zoom"] = 19
-        kwargs["attr"] = "OneMap" 
+        kwargs["attr"] = "OneMap"
+
+        # run original init
         cls_init(self, **kwargs)
         return
     attrs["__init__"] = new_init
