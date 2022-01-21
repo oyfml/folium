@@ -72,8 +72,12 @@ class MapMeta(type):
     cls_init = attrs["__init__"]
     def new_init(self, *args, **kwargs):
        # convert args to kwargs
-        arg_names = inspect.getargspec(cls_init)[0]
-        for name, arg in zip(arg_names[1:], args):
+        arg_names = cls_init.__code__.co_varnames[1:]
+        if len(args) > len(arg_names):
+            raise TypeError(
+                f'__init__() takes {len(arg_names)}  positional arguments but {len(args)} were given'
+            )
+        for name, arg in zip(arg_names, args):
             kwargs[name] = arg
         # validate out-of-bounds location
         if "location" in kwargs.keys():
