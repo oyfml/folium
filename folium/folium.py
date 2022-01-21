@@ -72,32 +72,32 @@ class MapMeta(type):
     cls_init = attrs["__init__"]
     def new_init(self, *args, **kwargs):
        # convert args to kwargs
-       arg_names = inspect.getargspec(cls_init)[0]
-       for name, arg in zip(arg_names[1:], args):
-          kwargs[name] = arg
-       # validate and overwrite args / kwargs here
-       keys = kwargs.keys()
-       if "location" in keys:
-          validate_location(kwargs["location"])
-          tileserver_bounds = [103.5, 1.0, 104.2, 1.6]
-          if (
-             kwargs["location"][0] < tileserver_bounds[1] or
-             kwargs["location"][0] > tileserver_bounds[3] or
-             kwargs["location"][1] < tileserver_bounds[0] or
-             kwargs["location"][1] > tileserver_bounds[2]
-          ):
-             raise ValueError(
-                'Invalid bounds. Please ensure location is in (lat, lon) format. '
-                'The default location for the map is [1.2903, 103.8520]'
-             )
-       else:
-          kwargs["location"] = [1.2903, 103.8520]
-       kwargs["tiles"] = "https://mywebsite.com/tileserver/styles/grey/{z}/{x}/{y}.png"
-       kwargs["min_zoom"] = 11
-       kwargs["max_zoom"] = 19
-       kwargs["attr"] = "OneMap" 
-       cls_init(self, **kwargs)
-       return
+        arg_names = inspect.getargspec(cls_init)[0]
+        for name, arg in zip(arg_names[1:], args):
+            kwargs[name] = arg
+        # validate out-of-bounds location
+        if "location" in kwargs.keys():
+            validate_location(kwargs["location"])
+            tileserver_bounds = [103.5, 1.0, 104.2, 1.6]
+            if (
+                kwargs["location"][0] < tileserver_bounds[1] or
+                kwargs["location"][0] > tileserver_bounds[3] or
+                kwargs["location"][1] < tileserver_bounds[0] or
+                kwargs["location"][1] > tileserver_bounds[2]
+            ):
+                raise ValueError(
+                    'Invalid bounds. Please ensure location is in (lat, lon) format. '
+                    'The default location for the map is [1.2903, 103.8520]'
+                )
+        else:
+            kwargs["location"] = [1.2903, 103.8520]
+        # overwrite default kwargs here
+        kwargs["tiles"] = "https://mywebsite.com/tileserver/styles/grey/{z}/{x}/{y}.png"
+        kwargs["min_zoom"] = 11
+        kwargs["max_zoom"] = 19
+        kwargs["attr"] = "OneMap" 
+        cls_init(self, **kwargs)
+        return
     attrs["__init__"] = new_init
     return type(class_name, bases, attrs)
 
